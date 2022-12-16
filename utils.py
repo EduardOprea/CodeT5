@@ -21,9 +21,9 @@ def load_and_cache_gen_data(args, filename, pool, tokenizer, split_tag, only_src
     cache_fn = '{}/{}.pt'.format(args.cache_path, split_tag + ('_src' if only_src else '') + data_tag)
 
     if args.task == 'gen_tests' and split_tag == 'train':
-        examples = read_unit_tests_generation_examples(args.root_train_dataset_custom, 5)
+        examples = read_unit_tests_generation_examples(args.root_train_dataset_custom, args.data_num)
     elif args.task == 'gen_tests' and split_tag == 'dev':
-        examples = read_unit_tests_generation_examples(args.root_eval_dataset_custom, 5)
+        examples = read_unit_tests_generation_examples(args.root_eval_dataset_custom, args.data_num)
     else:
         examples = read_examples(filename, args.data_num, args.task)
 
