@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Debug generation train procedure",
+            "type": "python",
+            "request": "launch",
+            "program": "run_gen.py",
+            "args":["--do_train","--do_eval","--do_eval_bleu","--save_last_checkpoints","--task", "gen_tests", "--cache_path", "./output/cache_data",
+             "--summary_dir","./output/tensorboard","--res_dir","./output/prediction",
+              "--output_dir","./output", "--data_dir","./data",
+              "--model_type","codet5","--tokenizer_name", "Salesforce/codet5-small", "--model_name_or_path", "Salesforce/codet5-small",
+                "--root_eval_dataset_custom", "E:\\Fisierele mele\\Facultate\\DNN\\Project\\Code\\methods2test\\corpus\\json\\eval",
+                "--root_train_dataset_custom", "E:\\Fisierele mele\\Facultate\\DNN\\Project\\Code\\methods2test\\corpus\\json\\train"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}

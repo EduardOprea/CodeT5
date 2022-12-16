@@ -1,4 +1,5 @@
 import json
+import os
 
 
 def add_lang_by_task(target_str, task, sub_task):
@@ -163,6 +164,40 @@ class CloneExample(object):
         self.url2 = url2
 
 
+def read_unit_tests_generation_examples(rootdir, datanum):
+    examples = []
+    idx = 0 
+    json_files = get_json_file_names(rootdir)
+    for file in json_files:
+        data = load_json_obj(f'{rootdir}/{file}')
+        
+        examples.append(
+                Example(
+                    idx=idx,
+                    source=data["src_fm"],
+                    target=data["target"],
+                )
+            )
+        idx += 1
+        if datanum == idx: 
+            break
+
+    return examples
+
+def get_json_file_names(rootdir):
+        result = []
+        for _, subdirs, _ in os.walk(rootdir):
+                for subdir in subdirs:
+                        files = os.listdir(os.path.join(rootdir,subdir))
+                        for file in files:
+                                result.append(f'{subdir}/{file}')
+        return result
+
+def load_json_obj(path):
+        with open(path) as f:
+                data = json.load(f)
+        return data
+
 def read_translate_examples(filename, data_num):
     """Read examples from filename."""
     examples = []
@@ -170,6 +205,7 @@ def read_translate_examples(filename, data_num):
     src_filename = filename.split(',')[0]
     trg_filename = filename.split(',')[1]
     idx = 0
+
     with open(src_filename) as f1, open(trg_filename) as f2:
         for line1, line2 in zip(f1, f2):
             src = line1.strip()

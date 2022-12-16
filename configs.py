@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 def add_args(parser):
     parser.add_argument("--task", type=str, required=True,
-                        choices=['summarize', 'concode', 'translate', 'refine', 'defect', 'clone', 'multi_task'])
+                        choices=['summarize', 'concode', 'translate', 'refine', 'defect', 'clone', 'multi_task','gen_tests'])
     parser.add_argument("--sub_task", type=str, default='')
     parser.add_argument("--lang", type=str, default='')
     parser.add_argument("--eval_task", type=str, default='')
@@ -22,6 +22,9 @@ def add_args(parser):
     parser.add_argument("--cache_path", type=str, required=True)
     parser.add_argument("--summary_dir", type=str, required=True)
     parser.add_argument("--data_dir", type=str, required=True)
+    parser.add_argument("--root_eval_dataset_custom", type=str, required = True)
+    parser.add_argument("--root_train_dataset_custom", type=str, required = True)
+
     parser.add_argument("--res_dir", type=str, required=True)
     parser.add_argument("--res_fn", type=str, default='')
     parser.add_argument("--add_task_prefix", action='store_true', help="Whether to add task prefix for t5 and codet5")

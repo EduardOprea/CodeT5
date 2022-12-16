@@ -7,18 +7,25 @@ import torch
 import time
 from tqdm import tqdm
 from _utils import *
+from dataset_utils.jsonlist_dataset import TestMethodsDataset
 
 logger = logging.getLogger(__name__)
 
 
 def load_and_cache_gen_data(args, filename, pool, tokenizer, split_tag, only_src=False, is_sample=False):
+    
     # cache the data into args.cache_path except it is sampled
     # only_src: control whether to return only source ids for bleu evaluating (dev/test)
     # return: examples (Example object), data (TensorDataset)
     data_tag = '_all' if args.data_num == -1 else '_%d' % args.data_num
     cache_fn = '{}/{}.pt'.format(args.cache_path, split_tag + ('_src' if only_src else '') + data_tag)
 
-    examples = read_examples(filename, args.data_num, args.task)
+    if args.task == 'gen_tests' and split_tag == 'train':
+        examples = read_unit_tests_generation_examples(args.root_train_dataset_custom, 5)
+    elif args.task == 'gen_tests' and split_tag == 'dev':
+        examples = read_unit_tests_generation_examples(args.root_eval_dataset_custom, 5)
+    else:
+        examples = read_examples(filename, args.data_num, args.task)
 
     if is_sample:
         examples = random.sample(examples, min(5000, len(examples)))
@@ -205,6 +212,12 @@ def get_filenames(data_root, task, sub_task, split=''):
         train_fn = '{}/train.jsonl'.format(data_dir)
         dev_fn = '{}/valid.jsonl'.format(data_dir)
         test_fn = '{}/test.jsonl'.format(data_dir)
+    elif task == 'gen_tests':
+        # left empty because the paths are put in another env variable
+        data_dir = ''
+        train_fn = ''
+        dev_fn = ''
+        test_fn = ''
     if split == 'train':
         return train_fn
     elif split == 'dev':
@@ -222,7 +235,7 @@ def read_examples(filename, data_num, task):
         'translate': read_translate_examples,
         'concode': read_concode_examples,
         'clone': read_clone_examples,
-        'defect': read_defect_examples,
+        'defect': read_defect_examples
     }
     return read_example_dict[task](filename, data_num)
 
