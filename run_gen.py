@@ -174,6 +174,7 @@ def main():
     set_seed(args)
     config, model, tokenizer = build_or_load_gen_model(args)
     print("Output dir", args.output_dir)
+    print("Save checkpoint",args.save_last_checkpoints)
     model.to(args.device)
     if args.n_gpu > 1:
         # for DataParallel
@@ -275,6 +276,7 @@ def main():
 
                 # save last checkpoint
                 if args.save_last_checkpoints:
+                    print("Save checkpoint")
                     last_output_dir = os.path.join(args.output_dir, 'checkpoint-last')
                     if not os.path.exists(last_output_dir):
                         os.makedirs(last_output_dir)
