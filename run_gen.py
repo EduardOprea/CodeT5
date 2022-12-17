@@ -260,7 +260,7 @@ def main():
                     train_loss = round(tr_loss * args.gradient_accumulation_steps / (nb_tr_steps + 1), 4)
                     bar.set_description("[{}] Train loss {}".format(cur_epoch, round(train_loss, 3)))
 
-            if args.do_eval:
+            if args.do_eval and (((cur_epoch + 1) % args.eval_steps) == 0 ) :
                 # Eval model with dev dataset
                 if 'dev_loss' in dev_dataset:
                     eval_examples, eval_data = dev_dataset['dev_loss']
@@ -303,6 +303,7 @@ def main():
                         model_to_save = model.module if hasattr(model, 'module') else model
                         output_model_file = os.path.join(output_dir, "pytorch_model.bin")
                         torch.save(model_to_save.state_dict(), output_model_file)
+                        print("Save the best ppl model into %s", output_model_file)
                         logger.info("Save the best ppl model into %s", output_model_file)
                 else:
                     not_loss_dec_cnt += 1

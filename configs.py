@@ -17,6 +17,7 @@ def add_args(parser):
     parser.add_argument("--add_lang_ids", action='store_true')
     parser.add_argument("--data_num", default=-1, type=int)
     parser.add_argument("--start_epoch", default=0, type=int)
+    parser.add_argument("--eval_steps", default=1, type=int)
     parser.add_argument("--num_train_epochs", default=100, type=int)
     parser.add_argument("--patience", default=5, type=int)
     parser.add_argument("--cache_path", type=str, required=True)
@@ -90,8 +91,8 @@ def add_args(parser):
     parser.add_argument("--log_steps", default=-1, type=int, )
     parser.add_argument("--max_steps", default=-1, type=int,
                         help="If > 0: set total number of training steps to perform. Override num_train_epochs.")
-    parser.add_argument("--eval_steps", default=-1, type=int,
-                        help="")
+    # parser.add_argument("--eval_steps", default=-1, type=int,
+    #                     help="")
     parser.add_argument("--train_steps", default=-1, type=int,
                         help="")
     parser.add_argument("--warmup_steps", default=100, type=int,
