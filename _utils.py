@@ -166,9 +166,11 @@ class CloneExample(object):
 
 
 def read_unit_tests_generation_examples(rootdir, datanum):
+    print("Reading unit tests dataset")
     examples = []
     idx = 0 
     json_files = get_json_file_names(rootdir)
+    print("Total number of records in the dataset is", len(json_files))
     for file in json_files:
         data = load_json_obj(f'{rootdir}/{file}')
         
