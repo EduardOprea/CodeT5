@@ -172,6 +172,7 @@ def read_unit_tests_generation_examples(rootdir, datanum):
     json_files = get_json_file_names(rootdir)
     print("Total number of records in the dataset is", len(json_files))
     for file in json_files:
+        print("Loading record number ", idx)
         data = load_json_obj(f'{rootdir}/{file}')
         
         examples.append(
