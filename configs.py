@@ -25,6 +25,8 @@ def add_args(parser):
     parser.add_argument("--data_dir", type=str, required=True)
     parser.add_argument("--root_eval_dataset_custom", type=str, required = True)
     parser.add_argument("--root_train_dataset_custom", type=str, required = True)
+    parser.add_argument("--train_file", type=str, required=True)
+    parser.add_argument("--val_file", type=str, required=True)
 
     parser.add_argument("--res_dir", type=str, required=True)
     parser.add_argument("--res_fn", type=str, default='')

@@ -7,7 +7,7 @@ import torch
 import time
 from tqdm import tqdm
 from _utils import *
-from dataset_utils.jsonlist_dataset import TestMethodsDataset
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +21,11 @@ def load_and_cache_gen_data(args, filename, pool, tokenizer, split_tag, only_src
     cache_fn = '{}/{}.pt'.format(args.cache_path, split_tag + ('_src' if only_src else '') + data_tag)
 
     if args.task == 'gen_tests' and split_tag == 'train':
-        examples = read_unit_tests_generation_examples(args.root_train_dataset_custom, args.data_num)
+        #examples = read_unit_tests_generation_examples(args.root_train_dataset_custom, args.data_num)
+        examples = read_unit_tests_dataset_jsonl(args.train_file, args.data_num)
     elif args.task == 'gen_tests' and split_tag == 'dev':
-        examples = read_unit_tests_generation_examples(args.root_eval_dataset_custom, args.data_num)
+        #examples = read_unit_tests_generation_examples(args.root_eval_dataset_custom, args.data_num)
+        examples = read_unit_tests_dataset_jsonl(args.val_file, args.data_num)
     else:
         examples = read_examples(filename, args.data_num, args.task)
 
@@ -268,7 +270,7 @@ def calc_stats(examples, tokenizer=None, is_tokenize=False):
 def create_if_not_exists(filename):
     if os.path.exists(filename) == False:
         print(f"{filename} file does not exist, creating it")
-        
+
 def get_elapse_time(t0):
     elapse_time = time.time() - t0
     if elapse_time > 3600:

@@ -168,6 +168,24 @@ class CloneExample(object):
         self.url2 = url2
 
 
+def read_unit_tests_dataset_jsonl(file, datanum):
+    examples = []
+    idx = 0
+    start_time = time.time()
+    f = open(file,"r")
+    while True:
+        json_content = f.readline()
+        if not json_content:
+            break
+        data = ujson.decode(json_content)
+        examples.append(Example(idx, data["src_fm"], data["target"]))
+        idx = idx + 1
+        if idx == datanum:
+            break
+    f.close()
+    print("Reading dataset took --- %s seconds---" % (time.time() - start_time))
+    return examples
+
 def read_unit_tests_generation_examples(rootdir, datanum):
     print("Reading unit tests dataset from", rootdir)
     examples = []
@@ -179,6 +197,7 @@ def read_unit_tests_generation_examples(rootdir, datanum):
         json_files = random.sample(json_files,datanum)
     
     num_proc = os.cpu_count()
+    print("Num proc", num_proc)
     records = json_multiprocess(json_files, num_proc)
 
     for index, (source, target) in enumerate(records):
