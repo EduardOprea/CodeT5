@@ -265,6 +265,10 @@ def calc_stats(examples, tokenizer=None, is_tokenize=False):
                     len(examples), np.mean(avg_src_len), np.mean(avg_trg_len), max(avg_src_len), max(avg_trg_len))
 
 
+def create_if_not_exists(filename):
+    if os.path.exists(filename) == False:
+        print(f"{filename} file does not exist, creating it")
+        
 def get_elapse_time(t0):
     elapse_time = time.time() - t0
     if elapse_time > 3600:
