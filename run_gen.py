@@ -192,8 +192,6 @@ def main():
     args.train_filename, args.dev_filename, args.test_filename = get_filenames(args.data_dir, args.task, args.sub_task)
 
     summaryFile = os.path.join(args.output_dir, 'summary.log')
-    if not os.path.exists(summaryFile):
-        os.makedirs(summaryFile)
 
     fa = open(summaryFile, 'a+')
 
