@@ -1,3 +1,4 @@
+import ujson
 import json
 import os
 
@@ -195,7 +196,7 @@ def get_json_file_names(rootdir):
 
 def load_json_obj(path):
         with open(path) as f:
-                data = json.load(f)
+                data = ujson.load(f)
         return data
 
 def read_translate_examples(filename, data_num):
