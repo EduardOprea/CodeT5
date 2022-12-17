@@ -173,6 +173,7 @@ def main():
     set_dist(args)
     set_seed(args)
     config, model, tokenizer = build_or_load_gen_model(args)
+    print("Output dir", args.output_dir)
     model.to(args.device)
     if args.n_gpu > 1:
         # for DataParallel
@@ -189,7 +190,7 @@ def main():
         # Prepare training data loader
         train_examples, train_data = load_and_cache_gen_data(args, args.train_filename, pool, tokenizer, 'train')
 
-        
+
         train_sampler = RandomSampler(train_data) if args.local_rank == -1 else DistributedSampler(train_data)
         train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size,
                                       num_workers=4, pin_memory=True)
