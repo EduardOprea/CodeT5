@@ -186,9 +186,9 @@ def main():
     fa = open(os.path.join(args.output_dir, 'summary.log'), 'a+')
 
     if args.do_train:
-        if args.local_rank in [-1, 0] and args.data_num == -1:
+        if args.local_rank in [-1, 0]:
             summary_fn = '{}/{}'.format(args.summary_dir, '/'.join(args.output_dir.split('/')[1:]))
-            tb_writer = SummaryWriter(summary_fn)
+            tb_writer = SummaryWriter(args.summary_dir)
 
         # Prepare training data loader
         train_examples, train_data = load_and_cache_gen_data(args, args.train_filename, pool, tokenizer, 'train')
