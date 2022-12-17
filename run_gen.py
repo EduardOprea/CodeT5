@@ -165,13 +165,15 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
 
     return result
 
-
+def create_paths(args):
+    if not os.path.exists(args.res_dir):
+        os.makedirs(args.res_dir)
 def main():
     parser = argparse.ArgumentParser()
     args = add_args(parser)
     logger.info(args)
     t0 = time.time()
-
+    create_paths(args):
     set_dist(args)
     set_seed(args)
     config, model, tokenizer = build_or_load_gen_model(args)
@@ -187,7 +189,7 @@ def main():
     summaryFile = os.path.join(args.output_dir, 'summary.log')
     if not os.path.exists(summaryFile):
         os.makedirs(summaryFile)
-        
+
     fa = open(summaryFile, 'a+')
 
     if args.do_train:
