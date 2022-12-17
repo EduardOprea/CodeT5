@@ -167,13 +167,18 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
 
 def create_paths(args):
     if not os.path.exists(args.res_dir):
+        print("Res dir does not exist")
         os.makedirs(args.res_dir)
+    if not os.path.exists(args.output_dir):
+        print("Output dir does not exist")
+        os.makedirs(args.output_dir)
+   
 def main():
     parser = argparse.ArgumentParser()
     args = add_args(parser)
     logger.info(args)
     t0 = time.time()
-    create_paths(args):
+    create_paths(args)
     set_dist(args)
     set_seed(args)
     config, model, tokenizer = build_or_load_gen_model(args)
