@@ -279,12 +279,12 @@ def main():
                 # save last checkpoint
                 if args.save_last_checkpoints:
                     print("Save checkpoint")
-                    last_output_dir = os.path.join(args.output_dir, 'checkpoint-last')
+                    last_output_dir = os.path.join(args.output_dir, 'checkpoint_last')
                     if not os.path.exists(last_output_dir):
                         os.makedirs(last_output_dir)
                     model_to_save = model.module if hasattr(model, 'module') else model
-                    print("Save the last model into", last_output_dir)
-                    output_model_file = os.path.join(last_output_dir, "pytorch_model.bin")
+                    output_model_file = os.path.join(last_output_dir, "pytorch_model.pth")
+                    print("Save the last model into", output_model_file)
                     torch.save(model_to_save.state_dict(), output_model_file)
                     logger.info("Save the last model into %s", output_model_file)
 
