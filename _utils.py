@@ -1,3 +1,6 @@
+from multiprocessing import Pool
+import random
+import time
 import ujson
 import json
 import os
@@ -168,25 +171,32 @@ class CloneExample(object):
 def read_unit_tests_generation_examples(rootdir, datanum):
     print("Reading unit tests dataset from", rootdir)
     examples = []
-    idx = 0 
+    start_time = time.time()
     json_files = get_json_file_names(rootdir)
     print("Total number of records in the dataset is", len(json_files))
-    for file in json_files:
-        print("Loading record number ", idx)
-        data = load_json_obj(f'{rootdir}/{file}')
-        
-        examples.append(
-                Example(
-                    idx=idx,
-                    source=data["src_fm"],
-                    target=data["target"],
-                )
-            )
-        idx += 1
-        if datanum == idx: 
-            break
+    if datanum != -1:
+        print("We read just the first", datanum)
+        json_files = random.sample(json_files,datanum)
+    
+    num_proc = os.cpu_count()
+    records = json_multiprocess(json_files, num_proc)
 
+    for index, (source, target) in enumerate(records):
+        examples.append(Example(index, source, target))
+    print(f"Loading {datanum} samples from the dataset took => ")
+    print("--- %s seconds---" % (time.time() - start_time))
     return examples
+
+def json_multiprocess(fn_list, num_proc=4):
+    with Pool(num_proc) as pool:
+        r = pool.map(json_parse, fn_list, 15)
+        pool.close()
+        pool.join()
+    return r
+    
+def json_parse(file):
+    data = load_json_obj(file)    
+    return data["src_fm"], data["target"]
 
 def get_json_file_names(rootdir):
         result = []
@@ -194,7 +204,7 @@ def get_json_file_names(rootdir):
                 for subdir in subdirs:
                         files = os.listdir(os.path.join(rootdir,subdir))
                         for file in files:
-                                result.append(f'{subdir}/{file}')
+                                result.append(os.path.join(rootdir,subdir,file))
         return result
 
 def load_json_obj(path):
