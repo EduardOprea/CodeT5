@@ -5,6 +5,8 @@ def convert_jsons_to_jsonl(jsonFiles, output_name):
     with open(output_name, "a+") as output_file:
         for idx, file in enumerate(jsonFiles):
             content = read_file_content(file)
+            if "\n" in content:
+                print("stop right here chief")
             output_file.write(content)
             output_file.write("\n")
         

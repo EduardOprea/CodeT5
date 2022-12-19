@@ -23,7 +23,7 @@ def load_and_cache_gen_data(args, filename, pool, tokenizer, split_tag, only_src
     if args.task == 'gen_tests' and split_tag == 'train':
         #examples = read_unit_tests_generation_examples(args.root_train_dataset_custom, args.data_num)
         examples = read_unit_tests_dataset_jsonl(args.train_file, args.data_num)
-    elif args.task == 'gen_tests' and split_tag == 'dev':
+    elif args.task == 'gen_tests' and (split_tag == 'dev' or split_tag =='test'):
         #examples = read_unit_tests_generation_examples(args.root_eval_dataset_custom, args.data_num)
         examples = read_unit_tests_dataset_jsonl(args.val_file, args.data_num)
     else:
