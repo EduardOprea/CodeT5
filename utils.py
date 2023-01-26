@@ -36,6 +36,7 @@ def load_and_cache_gen_data(args, filename, pool, tokenizer, split_tag, only_src
     else:
         calc_stats(examples)
     if os.path.exists(cache_fn) and not is_sample:
+        print("Load cache data from ", cache_fn)
         logger.info("Load cache data from %s", cache_fn)
         data = torch.load(cache_fn)
     else:
