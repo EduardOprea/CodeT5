@@ -108,6 +108,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
                                        attention_mask=source_mask,
                                        use_cache=True,
                                        num_beams=args.beam_size,
+                                       no_repeat_ngram_size= 2,
                                        early_stopping=args.task == 'summarize',
                                        max_length=args.max_target_length)
                 top_preds = list(preds.cpu().numpy())
@@ -152,7 +153,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
             bleu = round(smooth_bleu.bleuFromMaps(goldMap, predictionMap)[0], 2)
         else:
             bleu = round(_bleu(gold_fn, output_fn), 2)
-            if args.task in ['concode', 'translate', 'refine']:
+            if args.task in ['concode', 'translate', 'refine', 'gen_tests']:
                 codebleu = calc_code_bleu.get_codebleu(gold_fn, output_fn, args.lang)
 
         result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu}
@@ -231,6 +232,7 @@ def main():
 
         dev_dataset = {}
         global_step, best_bleu_em, best_ppl = 0, -1, 1e6
+        best_code_bleu = -1
         not_loss_dec_cnt, not_bleu_em_inc_cnt = 0, 0 if args.do_eval_bleu else 1e6
 
         for cur_epoch in range(args.start_epoch, int(args.num_train_epochs)):
@@ -331,7 +333,8 @@ def main():
                                                                        only_src=True, is_sample=True)
 
                     result = eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, 'dev', 'e%d' % cur_epoch)
-                    dev_bleu, dev_em = result['bleu'], result['em']
+                    dev_bleu, dev_em, code_bleu = result['bleu'], result['em'], result['codebleu']
+                    print(f"BLEU : {dev_bleu}, EM: {dev_em}, CODE_BLEU: {code_bleu}")
                     if args.task in ['summarize']:
                         dev_bleu_em = dev_bleu
                     elif args.task in ['defect']:
@@ -339,16 +342,19 @@ def main():
                     else:
                         dev_bleu_em = dev_bleu + dev_em
                     if args.data_num == -1:
+                        tb_writer.add_scalar('code_bleu', code_bleu)
                         tb_writer.add_scalar('dev_bleu_em', dev_bleu_em, cur_epoch)
                         # tb_writer.add_scalar('dev_em', dev_em, cur_epoch)
-                    if dev_bleu_em > best_bleu_em:
+                    if dev_bleu_em > best_bleu_em or code_bleu > best_bleu_em:
                         not_bleu_em_inc_cnt = 0
-                        logger.info("  [%d] Best bleu+em: %.2f (bleu: %.2f, em: %.2f)",
-                                    cur_epoch, dev_bleu_em, dev_bleu, dev_em)
+                        logger.info("  [%d] Best bleu+em or code bleu: %.2f (bleu: %.2f, em: %.2f, code_bleu: %.2f)",
+                                    cur_epoch, dev_bleu_em, dev_bleu, dev_em, code_bleu)
+                        
                         logger.info("  " + "*" * 20)
                         best_bleu_em = dev_bleu_em
-                        fa.write("[%d] Best bleu+em changed into %.2f (bleu: %.2f, em: %.2f)\n" % (
-                            cur_epoch, best_bleu_em, dev_bleu, dev_em))
+                        best_bleu_em = code_bleu
+                        fa.write("[%d] Best bleu+em changed into %.2f (bleu: %.2f, em: %.2f, code_bleu: %.2f)\n" % (
+                            cur_epoch, best_bleu_em, dev_bleu, dev_em, code_bleu))
                         # Save best checkpoint for best bleu
                         output_dir = os.path.join(args.output_dir, 'checkpoint-best-bleu')
                         if not os.path.exists(output_dir):
