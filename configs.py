@@ -11,7 +11,7 @@ def add_args(parser):
     parser.add_argument("--task", type=str, required=True,
                         choices=['summarize', 'concode', 'translate', 'refine', 'defect', 'clone', 'multi_task','gen_tests'])
     parser.add_argument("--sub_task", type=str, default='')
-    parser.add_argument("--lang", type=str, default='')
+    parser.add_argument("--lang", type=str, default='java')
     parser.add_argument("--eval_task", type=str, default='')
     parser.add_argument("--model_type", default="codet5", type=str, choices=['roberta', 'bart', 'codet5'])
     parser.add_argument("--add_lang_ids", action='store_true')
