@@ -263,8 +263,15 @@ def calc_stats(examples, tokenizer=None, is_tokenize=False):
         logger.info("[TOKENIZE] avg src len: %d, avg trg len: %d, max src len: %d, max trg len: %d",
                     np.mean(avg_src_len_tokenize), np.mean(avg_trg_len_tokenize), max(avg_src_len_tokenize),
                     max(avg_trg_len_tokenize))
+        print("Read %d examples, avg src len: %d, avg trg len: %d, max src len: %d, max trg len: %d",
+                    len(examples), np.mean(avg_src_len), np.mean(avg_trg_len), max(avg_src_len), max(avg_trg_len))
+        print("[TOKENIZE] avg src len: %d, avg trg len: %d, max src len: %d, max trg len: %d",
+                    np.mean(avg_src_len_tokenize), np.mean(avg_trg_len_tokenize), max(avg_src_len_tokenize),
+                    max(avg_trg_len_tokenize))
     else:
         logger.info("Read %d examples, avg src len: %d, avg trg len: %d, max src len: %d, max trg len: %d",
+                    len(examples), np.mean(avg_src_len), np.mean(avg_trg_len), max(avg_src_len), max(avg_trg_len))
+        print("Read %d examples, avg src len: %d, avg trg len: %d, max src len: %d, max trg len: %d",
                     len(examples), np.mean(avg_src_len), np.mean(avg_trg_len), max(avg_src_len), max(avg_trg_len))
 
 
