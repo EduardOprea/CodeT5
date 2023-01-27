@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
 def eval_ppl_epoch(args, eval_data, eval_examples, model, tokenizer):
     eval_sampler = SequentialSampler(eval_data)
     eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size,
-                                 num_workers=4, pin_memory=True)
+                                 num_workers=0, pin_memory=True)
     # Start evaluating model
     logger.info("  " + "***** Running ppl evaluation *****")
     logger.info("  Num examples = %d", len(eval_examples))
@@ -88,7 +88,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
     eval_sampler = SequentialSampler(eval_data)
     if args.data_num == -1:
         eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size,
-                                     num_workers=4, pin_memory=True)
+                                     num_workers=0, pin_memory=True)
     else:
         eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
 
@@ -209,7 +209,7 @@ def main():
 
         train_sampler = RandomSampler(train_data) if args.local_rank == -1 else DistributedSampler(train_data)
         train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size,
-                                      num_workers=4, pin_memory=True)
+                                      num_workers=0, pin_memory=True)
 
         # Prepare optimizer and schedule (linear warmup and decay)
         no_decay = ['bias', 'LayerNorm.weight']
