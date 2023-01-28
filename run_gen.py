@@ -344,7 +344,7 @@ def main():
                     else:
                         dev_bleu_em = dev_bleu + dev_em
                     if args.data_num == -1:
-                        tb_writer.add_scalar('code_bleu', code_bleu)
+                        tb_writer.add_scalar('code_bleu', code_bleu, cur_epoch)
                         tb_writer.add_scalar('dev_bleu_em', dev_bleu_em, cur_epoch)
                         # tb_writer.add_scalar('dev_em', dev_em, cur_epoch)
                     if dev_bleu_em > best_bleu_em or code_bleu > best_code_bleu:
