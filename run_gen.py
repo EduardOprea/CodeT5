@@ -349,7 +349,7 @@ def main():
                         # tb_writer.add_scalar('dev_em', dev_em, cur_epoch)
                     if dev_bleu_em > best_bleu_em or code_bleu > best_code_bleu:
                         not_bleu_em_inc_cnt = 0
-                        logger.info("  [%d] Best bleu+em or code bleu: %.2f (bleu: %.2f, em: %.2f, code_bleu: %.2f)",
+                        print("  [%d] Best bleu+em or code bleu: %.2f (bleu: %.2f, em: %.2f, code_bleu: %.2f)",
                                     cur_epoch, dev_bleu_em, dev_bleu, dev_em, code_bleu)
                         
                         logger.info("  " + "*" * 20)
