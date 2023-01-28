@@ -347,14 +347,14 @@ def main():
                         tb_writer.add_scalar('code_bleu', code_bleu)
                         tb_writer.add_scalar('dev_bleu_em', dev_bleu_em, cur_epoch)
                         # tb_writer.add_scalar('dev_em', dev_em, cur_epoch)
-                    if dev_bleu_em > best_bleu_em or code_bleu > best_bleu_em:
+                    if dev_bleu_em > best_bleu_em or code_bleu > best_code_bleu:
                         not_bleu_em_inc_cnt = 0
                         logger.info("  [%d] Best bleu+em or code bleu: %.2f (bleu: %.2f, em: %.2f, code_bleu: %.2f)",
                                     cur_epoch, dev_bleu_em, dev_bleu, dev_em, code_bleu)
                         
                         logger.info("  " + "*" * 20)
                         best_bleu_em = dev_bleu_em
-                        best_bleu_em = code_bleu
+                        best_code_bleu = code_bleu
                         fa.write("[%d] Best bleu+em changed into %.2f (bleu: %.2f, em: %.2f, code_bleu: %.2f)\n" % (
                             cur_epoch, best_bleu_em, dev_bleu, dev_em, code_bleu))
                         # Save best checkpoint for best bleu
