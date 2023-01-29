@@ -81,7 +81,7 @@ def optimize_model(model, epoch, training_loader, device, optimizer,  criterion,
     nb_tr_steps = 0
     nb_tr_examples = 0
     model.train()
-    for _, data in tqdm(enumerate(training_loader, 0)):
+    for _, data in enumerate(tqdm(training_loader)):
         ids = data['ids'].to(device, dtype = torch.long)
         mask = data['mask'].to(device, dtype = torch.long)
         targets = data['targets'].to(device, dtype = torch.long)
@@ -121,7 +121,7 @@ def eval(model, val_loader, device, criterion, tb_writer: SummaryWriter = None):
     model.eval()
     n_correct = 0; n_wrong = 0; total = 0; tr_loss=0; nb_tr_steps=0; nb_tr_examples=0
     with torch.no_grad():
-        for _, data in tqdm(enumerate(val_loader, 0)):
+        for _, data in enumerate(tqdm(val_loader)):
             ids = data['ids'].to(device, dtype = torch.long)
             mask = data['mask'].to(device, dtype = torch.long)
             targets = data['targets'].to(device, dtype = torch.long)
@@ -180,7 +180,9 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(params =  model.parameters(), lr=args.lr)
     
     train_set = CodeCompilableDataset(args.train_file, tokenizer, args.max_source_length)
+    print(f"Train set has {len(train_set)} samples")
     val_set = CodeCompilableDataset(args.val_file, tokenizer, args.max_source_length)
+    print(f"Val set has {len(val_set)} samples")
     train_loader = DataLoader(train_set, batch_size=args.train_batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=args.val_batch_size)
 
