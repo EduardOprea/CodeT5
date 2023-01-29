@@ -22,7 +22,7 @@ class CodeCompilableDataset(Dataset):
             
             data = ujson.decode(json_content)
 
-            code_blocks.append(data["src_fm"])
+            code_blocks.append(data["target"])
         
         f.close()
         return code_blocks
