@@ -2,7 +2,7 @@ import argparse
 from random import random
 import torch
 from torch.utils.tensorboard import SummaryWriter
-from transformers import RobertaTokenizer, RobertaForSequenceClassification
+from transformers import RobertaTokenizer, RobertaForSequenceClassification, RobertaConfig
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
 import ujson
@@ -171,8 +171,9 @@ if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("Training on ", device)
 
+    config = RobertaConfig(vocab_size = 32100)
     tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5-small")
-    model = RobertaForSequenceClassification.from_pretrained("roberta-base", num_labels = 2)
+    model = RobertaForSequenceClassification(config)
 
     tb_writer = SummaryWriter(args.output_dir)
 
