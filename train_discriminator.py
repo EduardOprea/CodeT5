@@ -171,14 +171,15 @@ if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("Training on ", device)
 
-    config = RobertaConfig(vocab_size = 32100)
+    config = RobertaConfig(vocab_size = 32100, hidden_dropout_prob = 0.2)
     tokenizer = RobertaTokenizer.from_pretrained("Salesforce/codet5-small")
     model = RobertaForSequenceClassification(config)
+
 
     tb_writer = SummaryWriter(args.output_dir)
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(params =  model.parameters(), lr=args.lr)
+    optimizer = torch.optim.Adam(params =  model.parameters(), lr=args.lr, weight_decay = 0.1)
     
     train_set = CodeCompilableDataset(args.train_file, tokenizer, args.max_source_length)
     print(f"Train set has {len(train_set)} samples")
