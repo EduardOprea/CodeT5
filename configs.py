@@ -31,6 +31,8 @@ def add_args(parser):
     parser.add_argument("--add_task_prefix", action='store_true', help="Whether to add task prefix for t5 and codet5")
     parser.add_argument("--save_last_checkpoints", action='store_true')
     parser.add_argument("--always_save_model", action='store_true')
+    parser.add_argument("--use_discriminator", action='store_true')
+    parser.add_argument("--discriminator_checkpoint", type=str)
     parser.add_argument("--do_eval_bleu", action='store_true', help="Whether to evaluate bleu on dev set.")
 
     ## Required parameters
@@ -86,6 +88,11 @@ def add_args(parser):
                         help="Epsilon for Adam optimizer.")
     parser.add_argument("--max_grad_norm", default=1.0, type=float,
                         help="Max gradient norm.")
+    parser.add_argument("--temperature", default=10000, type=int,
+                        help="Softmax temperature")
+    
+    parser.add_argument("--alpha", default=0.5, type=float,
+                        help="Coefficient of auxiliary loss")
 
     parser.add_argument("--save_steps", default=-1, type=int, )
     parser.add_argument("--log_steps", default=-1, type=int, )

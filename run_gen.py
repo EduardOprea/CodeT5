@@ -39,6 +39,7 @@ from evaluator.CodeBLEU import calc_code_bleu
 from evaluator.bleu import _bleu
 from utils import get_filenames, get_elapse_time, load_and_cache_gen_data
 from configs import add_args, set_seed, set_dist
+from transformers import RobertaForSequenceClassification, RobertaConfig
 
 logging.basicConfig(filename="log_file_test.log",
                             filemode='a',
@@ -175,7 +176,17 @@ def create_paths(args):
     if not os.path.exists(args.output_dir):
         print("Output dir does not exist")
         os.makedirs(args.output_dir)
-   
+def load_discriminator_network(args):
+    # config = RobertaConfig(vocab_size = 50000)
+    # discriminator = RobertaForSequenceClassification(config = config)
+    discriminator = RobertaForSequenceClassification.from_pretrained("roberta-base")
+    discriminator.to(args.device)
+    discriminator.load_state_dict(torch.load(args.discriminator_checkpoint))
+
+    for param in discriminator.parameters():
+            param.requires_grad = False
+    discriminator.eval()
+    return discriminator
 def main():
     parser = argparse.ArgumentParser()
     args = add_args(parser)
@@ -184,9 +195,15 @@ def main():
     create_paths(args)
     set_dist(args)
     set_seed(args)
+    if args.use_discriminator:
+        print("Using a discriminator network from checkpoint ", args.discriminator_checkpoint)
+        discriminator = load_discriminator_network(args)
+    
     config, model, tokenizer = build_or_load_gen_model(args)
+    
     print("Output dir", args.output_dir)
     print("Save checkpoint",args.save_last_checkpoints)
+    print("Training on ", args.device)
     model.to(args.device)
     if args.n_gpu > 1:
         # for DataParallel
@@ -236,7 +253,9 @@ def main():
         global_step, best_bleu_em, best_ppl = 0, -1, 1e6
         best_code_bleu = -1
         not_loss_dec_cnt, not_bleu_em_inc_cnt = 0, 0 if args.do_eval_bleu else 1e6
-
+        discriminator_targets = torch.ones(args.train_batch_size, device = args.device, dtype=torch.long)
+        softmax = torch.nn.Softmax(dim = 2)
+        discriminator_loss = torch.nn.CrossEntropyLoss()
         for cur_epoch in range(args.start_epoch, int(args.num_train_epochs)):
             bar = tqdm(train_dataloader, total=len(train_dataloader), desc="Training")
             nb_tr_examples, nb_tr_steps, tr_loss = 0, 0, 0
@@ -255,10 +274,32 @@ def main():
                                     labels=target_ids, decoder_attention_mask=target_mask)
                     loss = outputs.loss
 
+                    if args.use_discriminator:
+                        outputs.logits = outputs.logits * args.temperature 
+                        generated_probs = softmax(outputs.logits)
+
+                        embeddings_table = discriminator.roberta.embeddings.word_embeddings.weight.clone()
+
+                        embedds_res = generated_probs @ embeddings_table[0:32100,:]
+
+                        generated_ids = torch.argmax(outputs.logits, dim = 2)
+                        generated_mask = generated_ids.ne(tokenizer.pad_token_id)
+
+                        discriminator_output = discriminator(inputs_embeds = embedds_res,
+                                                             attention_mask = generated_mask)
+
+                        d_loss = discriminator_loss(discriminator_output.logits, discriminator_targets)
+
+                        loss = loss + args.alpha * d_loss
+                        
+                
+                
+                
                 if args.n_gpu > 1:
                     loss = loss.mean()  # mean() to average on multi-gpu.
                 if args.gradient_accumulation_steps > 1:
                     loss = loss / args.gradient_accumulation_steps
+                
                 tr_loss += loss.item()
 
                 nb_tr_examples += source_ids.size(0)
